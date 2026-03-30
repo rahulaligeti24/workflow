@@ -1,6 +1,7 @@
 ﻿const { callLLM } = require("../services/aiService");
 const { createDocxBuffer, createPdfBase64, createPdfBuffer } = require("../services/exportService");
-const { DBDocument, Project } = require("../models");
+const { answerQuestion, getCorpusStats } = require("../services/ragService");
+const { DBDocument, Note, Project } = require("../models");
 
 async function generateDoc(req, res) {
   const { code, style, title, prompt } = req.body;
@@ -392,8 +393,122 @@ async function downloadMarkdownFromDb(req, res) {
   }
 }
 
+async function ragQuery(req, res) {
+  const { query, projectName, topK } = req.body;
+
+  if (!query || !String(query).trim()) {
+    return res.status(400).json({ error: "A query is required" });
+  }
+
+  try {
+    const result = await answerQuestion(query, {
+      projectName: projectName || undefined,
+      topK: Number(topK) || 6,
+    });
+
+    return res.json(result);
+  } catch (error) {
+    console.error("RAG Query Error:", error.message);
+    return res.status(500).json({ error: "Failed to answer question from saved transcripts and documents" });
+  }
+}
+
+async function ragStats(req, res) {
+  const { projectName } = req.query;
+
+  try {
+    const stats = await getCorpusStats(projectName || undefined);
+    return res.json(stats);
+  } catch (error) {
+    console.error("RAG Stats Error:", error.message);
+    return res.status(500).json({ error: "Failed to fetch RAG corpus stats" });
+  }
+}
+
+async function createNote(req, res) {
+  const { title, content, projectName, tags, pinned } = req.body;
+
+  if (!title || !content) {
+    return res.status(400).json({ error: "Title and content are required" });
+  }
+
+  try {
+    const note = await Note.create({
+      title: title.trim(),
+      content: content.trim(),
+      projectName: (projectName || "General").trim(),
+      tags: Array.isArray(tags) ? tags : [],
+      pinned: Boolean(pinned),
+    });
+
+    return res.status(201).json({ success: true, note });
+  } catch (error) {
+    console.error("Create Note Error:", error.message);
+    return res.status(500).json({ error: "Failed to create note" });
+  }
+}
+
+async function getNotes(req, res) {
+  const { projectName } = req.query;
+  const filter = projectName ? { projectName } : {};
+
+  try {
+    const notes = await Note.find(filter).sort({ pinned: -1, updatedAt: -1 });
+    return res.json({ notes });
+  } catch (error) {
+    console.error("Get Notes Error:", error.message);
+    return res.status(500).json({ error: "Failed to fetch notes" });
+  }
+}
+
+async function updateNote(req, res) {
+  const { noteId } = req.params;
+  const { title, content, projectName, tags, pinned } = req.body;
+
+  try {
+    const note = await Note.findByIdAndUpdate(
+      noteId,
+      {
+        ...(title !== undefined && { title: title.trim() }),
+        ...(content !== undefined && { content: content.trim() }),
+        ...(projectName !== undefined && { projectName: projectName.trim() || "General" }),
+        ...(tags !== undefined && { tags: Array.isArray(tags) ? tags : [] }),
+        ...(pinned !== undefined && { pinned: Boolean(pinned) }),
+      },
+      { new: true }
+    );
+
+    if (!note) {
+      return res.status(404).json({ error: "Note not found" });
+    }
+
+    return res.json({ success: true, note });
+  } catch (error) {
+    console.error("Update Note Error:", error.message);
+    return res.status(500).json({ error: "Failed to update note" });
+  }
+}
+
+async function deleteNote(req, res) {
+  const { noteId } = req.params;
+
+  try {
+    const note = await Note.findByIdAndDelete(noteId);
+    if (!note) {
+      return res.status(404).json({ error: "Note not found" });
+    }
+
+    return res.json({ success: true, message: "Note deleted" });
+  } catch (error) {
+    console.error("Delete Note Error:", error.message);
+    return res.status(500).json({ error: "Failed to delete note" });
+  }
+}
+
 module.exports = {
+  createNote,
   deleteDocument,
+  deleteNote,
   downloadDocx,
   downloadMarkdownFromDb,
   downloadPdf,
@@ -401,9 +516,13 @@ module.exports = {
   generateDoc,
   getDocument,
   getDocumentsByProject,
+  getNotes,
   getProjects,
   getProjectSessions,
+  ragQuery,
+  ragStats,
   refineDoc,
   saveDocument,
   updateDocument,
+  updateNote,
 };

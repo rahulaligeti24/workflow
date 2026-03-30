@@ -1,49 +1,4 @@
-:root {
-  --bg: #030014;
-  --surface: rgba(255, 255, 255, 0.05);
-  --surface-strong: rgba(255, 255, 255, 0.08);
-  --border: rgba(255, 255, 255, 0.1);
-  --text: #ffffff;
-  --muted: rgba(255, 255, 255, 0.68);
-  --muted-soft: rgba(255, 255, 255, 0.5);
-  --accent-1: #d946ef;
-  --accent-2: #8b5cf6;
-  --accent-3: #3b82f6;
-  --success: #34d399;
-  --shadow: 0 24px 80px rgba(15, 23, 42, 0.45);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: "Inter", "Segoe UI", sans-serif;
-}
-
-img,
-svg {
-  display: block;
-}
-
-button,
-a {
-  transition: all 0.3s ease;
-}
-
-button {
-  font: inherit;
-  cursor: pointer;
-}
-
-.home-page {
+﻿.home-page {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
@@ -884,8 +839,6 @@ button {
   }
 }
 
-
-
 .hero-panel {
   padding: 1.75rem;
   border-radius: 36px;
@@ -1026,7 +979,6 @@ button {
   background: #4b8dff;
 }
 
-
 .section-grid {
   grid-template-columns: 1.05fr 0.95fr;
   align-items: start;
@@ -1080,4 +1032,3 @@ button {
     max-width: 100%;
   }
 }
-
