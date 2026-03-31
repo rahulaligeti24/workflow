@@ -16,7 +16,7 @@
     radial-gradient(circle at 88% 12%, rgba(59, 130, 246, 0.16), transparent 28%),
     linear-gradient(180deg, #050114 0%, #07131f 42%, #06111c 100%);
   color: var(--text);
-  padding: 28px 18px 54px;
+  padding: 28px 14px 54px;
 }
 
 .dashboard-orb {
@@ -55,8 +55,8 @@
 }
 
 .dashboard-shell {
-  width: min(1300px, 100%);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   position: relative;
   z-index: 1;
 }
@@ -65,7 +65,7 @@
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);
   gap: 22px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .card,
@@ -87,6 +87,8 @@
   top: 20px;
   display: grid;
   gap: 18px;
+  align-self: stretch;
+  min-height: 100%;
 }
 
 .sidebar-top h2,
@@ -867,7 +869,7 @@
   }
 
   .dashboard-page {
-    padding-inline: 14px;
+    padding-inline: 10px;
   }
 
   .card,
@@ -889,3 +891,6 @@
     flex-direction: column;
   }
 }
+
+
+

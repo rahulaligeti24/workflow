@@ -1030,16 +1030,8 @@ function Dashboard() {
         <aside className="dashboard-sidebar card">
           <div className="sidebar-top">
             <p className="sidebar-kicker">AI Workspace</p>
-            <h2>AI Documentation Studio</h2>
-            <p className="sidebar-copy">Move between workflow stages, shared notes, and project knowledge from one persistent sidebar.</p>
+            <h2>WorkFlow</h2>
           </div>
-
-          <div className="sidebar-project comp-box">
-            <span className="sidebar-mini-label">Current scope</span>
-            <strong>{currentProject}</strong>
-            <p>{activePanel === "notes" ? "Notes are scoped to this project." : "Saved docs and retrieval stay tied to this project when a title is set."}</p>
-          </div>
-
           <nav className="sidebar-nav" aria-label="Dashboard panels">
             {sidebarItems.map((item) => (
               <button
